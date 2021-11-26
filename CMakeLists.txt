@@ -6,7 +6,22 @@ message(STATUS "Found OpenGL")
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(cubestretch CubestretchApp.cpp)
+add_executable(cubestretch
+               src/CubestretchApp.cpp
+               src/renderer/VertexBuffer.h
+               src/renderer/VertexBuffer.cpp
+               src/renderer/IndexBuffer.h
+               src/renderer/IndexBuffer.cpp
+               src/renderer/VertexArray.cpp
+               src/renderer/VertexArray.h
+               src/renderer/VertexBufferLayout.cpp
+               src/renderer/VertexBufferLayout.h
+               src/renderer/Renderer.cpp
+               src/renderer/Renderer.h
+               src/renderer/Shaders.cpp
+               src/renderer/Shaders.h
+               res/shaders/FragmentShader.fs
+               res/shaders/VertexShader.vs)
 
 # GLM
 find_package(GLM REQUIRED)
