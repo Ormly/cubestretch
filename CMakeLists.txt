@@ -7,6 +7,7 @@ message(STATUS "Found OpenGL")
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(cubestretch
+               src/CubestretchApp.h
                src/CubestretchApp.cpp
                src/renderer/VertexBuffer.h
                src/renderer/VertexBuffer.cpp
