@@ -1,5 +1,5 @@
-#ifndef BREAKOUT_INDEXBUFFER_H
-#define BREAKOUT_INDEXBUFFER_H
+#ifndef CUBESTRETCH_INDEXBUFFER_H
+#define CUBESTRETCH_INDEXBUFFER_H
 
 #include "GL/glew.h"
 
@@ -18,5 +18,5 @@ public:
     GLuint getNumberOfIndices() const;
 };
 
-#endif //BREAKOUT_INDEXBUFFER_H
+#endif //CUBESTRETCH_INDEXBUFFER_H
 

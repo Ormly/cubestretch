@@ -22,7 +22,13 @@ add_executable(cubestretch
                src/renderer/Shaders.cpp
                src/renderer/Shaders.h
                res/shaders/FragmentShader.fs
-               res/shaders/VertexShader.vs)
+               res/shaders/VertexShader.vs
+               src/objects/Rectangle.h
+               src/objects/Rectangle.cpp
+               src/objects/Cube.cpp
+               src/objects/Cube.h
+               src/objects/CubeFace.cpp
+               src/objects/CubeFace.h)
 
 # GLM
 find_package(GLM REQUIRED)

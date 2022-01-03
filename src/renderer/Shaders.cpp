@@ -185,6 +185,8 @@ GLuint Shaders::createShaders()
         "Error message: " <<
         errorMessage <<
         std::endl;
+
+        return 0;
     }
 
     glDetachShader(programID, vertexShaderID);
@@ -196,6 +198,11 @@ GLuint Shaders::createShaders()
     std::cout << "Shaders successfully created!" << std::endl;
 
     return programID;
+}
+
+GLuint Shaders::getProgramID() const
+{
+    return m_programID;
 }
 
 

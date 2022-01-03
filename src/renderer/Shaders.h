@@ -1,5 +1,5 @@
-#ifndef BREAKOUT_SHADERS_H
-#define BREAKOUT_SHADERS_H
+#ifndef CUBESTRETCH_SHADERS_H
+#define CUBESTRETCH_SHADERS_H
 
 #include <string>
 #include <GL/glew.h>
@@ -22,6 +22,8 @@ public:
 
     void setUniform4f(const std::string& name, GLfloat value1, GLfloat value2, GLfloat value3, GLfloat value4);
     void setUniformMat4f(const std::string& name, const glm::mat4& matrix);
+
+    GLuint getProgramID() const;
 private:
     GLboolean readShadersFromFile();
     GLuint compileVertexShader();
@@ -31,4 +33,4 @@ private:
 };
 
 
-#endif //BREAKOUT_SHADERS_H
+#endif //CUBESTRETCH_SHADERS_H

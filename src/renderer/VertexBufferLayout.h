@@ -1,5 +1,5 @@
-#ifndef BREAKOUT_VERTEXBUFFERLAYOUT_H
-#define BREAKOUT_VERTEXBUFFERLAYOUT_H
+#ifndef CUBESTRETCH_VERTEXBUFFERLAYOUT_H
+#define CUBESTRETCH_VERTEXBUFFERLAYOUT_H
 
 #include <vector>
 #include <string>
@@ -59,4 +59,4 @@ template<> inline void VertexBufferLayout::push<GLchar>(GLuint numberOfElements)
 }
 
 
-#endif //BREAKOUT_VERTEXBUFFERLAYOUT_H
+#endif //CUBESTRETCH_VERTEXBUFFERLAYOUT_H

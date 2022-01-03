@@ -7,23 +7,30 @@
 #include "renderer/IndexBuffer.h"
 #include "renderer/Shaders.h"
 #include "renderer/Renderer.h"
+#include "objects/Cube.h"
 
-GLFWwindow* window;
-GLfloat windowWidth;
-GLfloat windowHeight;
+GLFWwindow* m_window;
+GLfloat m_windowWidth;
+GLfloat m_windowHeight;
 
-GLdouble deltaTime;
-GLdouble previousTime;
-GLdouble limitFPS;
+GLdouble m_deltaTime;
+GLdouble m_previousTime;
+GLdouble m_limitFPS;
 
-Renderer renderer;
-Shaders* shaders;
+Renderer m_renderer;
+Shaders* m_shaders;
 
-glm::mat4 projection;
-glm::mat4 identity;
+glm::mat4 m_identity;
+glm::mat4 m_translation;
+glm::mat4 m_rotation;
+glm::mat4 m_projection;
+glm::mat4 m_modelTransform;
+
+std::vector<Cube*> m_cubes;
 
 GLboolean initializeWindow();
 void initializeContents();
+void initializeOriginCube();
 void update();
 void render();
 

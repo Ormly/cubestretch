@@ -1,12 +1,12 @@
 #version 330 core
 
-layout(location = 0) in vec2 position;
+layout(location = 0) in vec3 position;
 
-uniform mat4 u_projection;
-uniform mat4 u_translation;
+uniform mat4 u_modelTransform;
 
 void main()
 {
-    gl_Position =  u_projection * u_translation * vec4(position, 0.0, 1.0);
+    vec4 vertex = vec4(position, 1.0);
+    gl_Position = u_modelTransform * vertex;
 }
 

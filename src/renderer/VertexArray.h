@@ -1,5 +1,5 @@
-#ifndef BREAKOUT_VERTEXARRAY_H
-#define BREAKOUT_VERTEXARRAY_H
+#ifndef CUBESTRETCH_VERTEXARRAY_H
+#define CUBESTRETCH_VERTEXARRAY_H
 
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
@@ -18,4 +18,4 @@ public:
 };
 
 
-#endif //BREAKOUT_VERTEXARRAY_H
+#endif //CUBESTRETCH_VERTEXARRAY_H

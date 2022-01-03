@@ -1,5 +1,5 @@
-#ifndef BREAKOUT_VERTEXBUFFER_H
-#define BREAKOUT_VERTEXBUFFER_H
+#ifndef CUBESTRETCH_VERTEXBUFFER_H
+#define CUBESTRETCH_VERTEXBUFFER_H
 
 #include "GL/glew.h"
 
@@ -15,5 +15,5 @@ public:
     void unbind() const;
 };
 
-#endif //BREAKOUT_VERTEXBUFFER_H
+#endif //CUBESTRETCH_VERTEXBUFFER_H
 

@@ -1,5 +1,5 @@
-#ifndef BREAKOUT_RENDERER_H
-#define BREAKOUT_RENDERER_H
+#ifndef CUBESTRETCH_RENDERER_H
+#define CUBESTRETCH_RENDERER_H
 
 #include "GL/glew.h"
 #include "VertexArray.h"
@@ -17,4 +17,4 @@ public:
 };
 
 
-#endif //BREAKOUT_RENDERER_H
+#endif //CUBESTRETCH_RENDERER_H

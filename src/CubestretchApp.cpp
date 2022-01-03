@@ -1,5 +1,6 @@
 #include "CubestretchApp.h"
 #include <iostream>
+#include <array>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -17,33 +18,39 @@ static void key_callback(GLFWwindow* glfwWindow, int key, int scancode, int acti
 
 int main()
 {
-    windowWidth = 1280.0f;
-    windowHeight = 960.0f;
+    m_windowWidth = 1280.0f;
+    m_windowHeight = 960.0f;
 
     if(!initializeWindow())
         exit(EXIT_FAILURE);
 
-    shaders = new Shaders("../res/shaders/VertexShader.vs",
-                          "../res/shaders/FragmentShader.fs");
-    shaders->bind();
+    m_shaders = new Shaders("../res/shaders/VertexShader.vs",
+                            "../res/shaders/FragmentShader.fs");
+
+    if(m_shaders->getProgramID() == 0)
+        exit(EXIT_FAILURE);
+
+    m_shaders->bind();
 
     initializeContents();
 
-    while (!glfwWindowShouldClose(window))
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    while (!glfwWindowShouldClose(m_window))
     {
         GLdouble currentTime = glfwGetTime();
-        deltaTime += (currentTime - previousTime) / limitFPS;
-        previousTime = currentTime;
+        m_deltaTime += (currentTime - m_previousTime) / m_limitFPS;
+        m_previousTime = currentTime;
 
-        while (deltaTime >= 1.0)
+        while (m_deltaTime >= 1.0)
         {
             glfwPollEvents();
             update();
-            deltaTime--;
+            m_deltaTime--;
         }
 
         render();
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(m_window);
     }
 
     glfwTerminate();
@@ -58,17 +65,52 @@ void update()
 
 void render()
 {
+    m_renderer.clear();
 
+    for(Cube* cube : m_cubes)
+    {
+        glm::vec4 cubeColor = cube->getColor();
+        m_shaders->setUniform4f("u_color", cubeColor.x, cubeColor.y, cubeColor.z, cubeColor.w);
+        m_renderer.draw(*(cube->getVertexArray()), *(cube->getIndexBuffer()), *m_shaders);
+    }
 }
 
 void initializeContents()
 {
-    projection = glm::ortho(0.0f, windowWidth, 0.0f, windowHeight);
-    identity = glm::mat4(1.0f);
+    initializeOriginCube();
 
-    limitFPS = 1.0 / 60.0;
-    previousTime = glfwGetTime();
-    deltaTime = 0;
+    //glViewport(0,0,m_windowWidth,m_windowHeight);
+
+    m_identity = glm::mat4(1.0f);
+    //m_screenToNDC = glm::ortho(0.0f, m_windowWidth, 0.0f, m_windowHeight, 0.1f, 20.0f);
+    m_translation = glm::translate(m_identity, glm::vec3(0.0f, 0.0f, -40.0f));
+    m_rotation = glm::rotate(m_identity, glm::radians(15.0f), glm::vec3(1.0f,0.0f,0.0f));
+    m_rotation = glm::rotate(m_rotation, glm::radians(-25.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    m_projection = glm::perspective(glm::radians(60.0f), m_windowWidth / m_windowHeight, 0.1f, 50.0f);
+
+    //m_modelTransform = m_projection * m_rotation * m_translation;
+    m_modelTransform = m_projection * m_translation * m_rotation;
+    //m_modelTransform = m_translation * m_rotation * m_projection;
+
+    //m_shaders->setUniformMat4f("u_screenToNDC", m_screenToNDC);
+    m_shaders->setUniformMat4f("u_modelTransform", m_modelTransform);
+    //m_shaders->setUniformMat4f("u_translation", m_translation);
+    //m_shaders->setUniformMat4f("u_rotation", m_rotation);
+    //m_shaders->setUniformMat4f("u_projection", m_projection);
+
+    m_limitFPS = 1.0 / 60.0;
+    m_previousTime = glfwGetTime();
+    m_deltaTime = 0;
+}
+
+void initializeOriginCube()
+{
+    std::array<Cube*, 6> neighbors = {{nullptr}};
+    glm::vec3 originCubeCenter = {0.0f, 0.0f, 0.0f};
+    //glm::vec3 originCubeCenter = {m_windowWidth / 2, m_windowHeight / 2, -1.0f};
+    glm::vec4 originCubeColor({1.0f, 1.0f, 1.0f, 1.0f});
+    Cube* originCube = new Cube(originCubeCenter, 3.0f, neighbors, originCubeColor);
+    m_cubes.push_back(originCube);
 }
 
 GLboolean initializeWindow()
@@ -91,8 +133,8 @@ GLboolean initializeWindow()
     glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
     glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
 
-    window = glfwCreateWindow(windowWidth, windowHeight, "cubestretch", nullptr, nullptr);
-    if (!window)
+    m_window = glfwCreateWindow(m_windowWidth, m_windowHeight, "cubestretch", nullptr, nullptr);
+    if (!m_window)
     {
         std::cout <<
                   "GLFW Error: Window context could not be initialized!" <<
@@ -101,7 +143,7 @@ GLboolean initializeWindow()
         return GL_FALSE;
     }
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(m_window);
     glfwSwapInterval(1);
 
     glewExperimental = true;
@@ -113,8 +155,9 @@ GLboolean initializeWindow()
         return GL_FALSE;
     }
 
-    //glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
-    glfwSetKeyCallback(window, key_callback);
+    //glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
+    glEnable(GL_DEPTH_TEST);
+    glfwSetKeyCallback(m_window, key_callback);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     return GL_TRUE;
