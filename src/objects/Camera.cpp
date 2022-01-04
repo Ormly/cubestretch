@@ -19,5 +19,12 @@ void Camera::mouseUpdate(const glm::vec2 &updatedMousePosition)
     if(glm::length(positionDelta) > 100.0f)
         return;
     else
-        m_direction = glm::mat3(glm::rotate(glm::radians(-positionDelta.x * 0.1f), m_UP)) * m_direction;
+    {
+        const float ROTATIONAL_SPEED = 0.05f;
+        glm::vec3 crossedViewDirection =  glm::cross(m_direction, m_UP);
+        glm::mat4 rotator = glm::rotate(glm::radians(-positionDelta.x * ROTATIONAL_SPEED), m_UP) *
+                            glm::rotate(glm::radians(-positionDelta.y * ROTATIONAL_SPEED), crossedViewDirection);
+
+        m_direction = glm::mat3(rotator) * m_direction;
+    }
 }
