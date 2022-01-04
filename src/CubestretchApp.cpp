@@ -2,7 +2,6 @@
 #include <iostream>
 #include <array>
 
-#include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
 static void error_callback(int error, const char* description)
@@ -14,6 +13,11 @@ static void key_callback(GLFWwindow* glfwWindow, int key, int scancode, int acti
 {
     if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(glfwWindow, GLFW_TRUE);
+}
+
+static void cursor_position_callback(GLFWwindow* window, double x, double y)
+{
+    m_camera->mouseUpdate(glm::vec2(x,y));
 }
 
 int main()
@@ -67,6 +71,11 @@ void render()
 {
     m_renderer.clear();
 
+    std::cout << "Rendering...\n" << std::endl;
+
+    m_modelTransform = m_projection * m_camera->getWorldToViewMatrix() * m_translation * m_rotation;
+    m_shaders->setUniformMat4f("u_modelTransform", m_modelTransform);
+
     for(Cube* cube : m_cubes)
     {
         glm::vec4 cubeColor = cube->getColor();
@@ -79,6 +88,8 @@ void initializeContents()
 {
     initializeOriginCube();
 
+    m_camera = new Camera();
+
     //glViewport(0,0,m_windowWidth,m_windowHeight);
 
     m_identity = glm::mat4(1.0f);
@@ -89,11 +100,9 @@ void initializeContents()
     m_projection = glm::perspective(glm::radians(60.0f), m_windowWidth / m_windowHeight, 0.1f, 50.0f);
 
     //m_modelTransform = m_projection * m_rotation * m_translation;
-    m_modelTransform = m_projection * m_translation * m_rotation;
     //m_modelTransform = m_translation * m_rotation * m_projection;
 
     //m_shaders->setUniformMat4f("u_screenToNDC", m_screenToNDC);
-    m_shaders->setUniformMat4f("u_modelTransform", m_modelTransform);
     //m_shaders->setUniformMat4f("u_translation", m_translation);
     //m_shaders->setUniformMat4f("u_rotation", m_rotation);
     //m_shaders->setUniformMat4f("u_projection", m_projection);
@@ -158,6 +167,7 @@ GLboolean initializeWindow()
     //glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
     glEnable(GL_DEPTH_TEST);
     glfwSetKeyCallback(m_window, key_callback);
+    glfwSetCursorPosCallback(m_window, cursor_position_callback);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     return GL_TRUE;

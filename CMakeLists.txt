@@ -28,7 +28,9 @@ add_executable(cubestretch
                src/objects/Cube.cpp
                src/objects/Cube.h
                src/objects/CubeFace.cpp
-               src/objects/CubeFace.h)
+               src/objects/CubeFace.h
+               src/objects/Camera.cpp
+               src/objects/Camera.h)
 
 # GLM
 find_package(GLM REQUIRED)

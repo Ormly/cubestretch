@@ -8,6 +8,7 @@
 #include "renderer/Shaders.h"
 #include "renderer/Renderer.h"
 #include "objects/Cube.h"
+#include "objects/Camera.h"
 
 GLFWwindow* m_window;
 GLfloat m_windowWidth;
@@ -19,6 +20,8 @@ GLdouble m_limitFPS;
 
 Renderer m_renderer;
 Shaders* m_shaders;
+
+Camera* m_camera;
 
 glm::mat4 m_identity;
 glm::mat4 m_translation;
