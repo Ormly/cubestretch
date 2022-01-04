@@ -17,13 +17,12 @@ static void key_callback(GLFWwindow* glfwWindow, int key, int scancode, int acti
 
 static void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
-    m_camera->mouseUpdate(glm::vec2(x,y));
 }
 
 int main()
 {
-    m_windowWidth = 1280.0f;
-    m_windowHeight = 960.0f;
+    m_windowWidth = 1600.0f;
+    m_windowHeight = 1200.0f;
 
     if(!initializeWindow())
         exit(EXIT_FAILURE);
@@ -64,7 +63,38 @@ int main()
 
 void update()
 {
+    checkInput();
+}
 
+void checkInput()
+{
+    double cursorX, cursorY;
+    glfwGetCursorPos(m_window, &cursorX, &cursorY);
+    m_camera->mouseUpdate(glm::vec2(cursorX,cursorY));
+
+    int state = glfwGetKey(m_window, GLFW_KEY_W);
+    if(state == GLFW_PRESS)
+        m_camera->moveForward();
+
+    state = glfwGetKey(m_window, GLFW_KEY_S);
+    if(state == GLFW_PRESS)
+        m_camera->moveBackward();
+
+    state = glfwGetKey(m_window, GLFW_KEY_A);
+    if(state == GLFW_PRESS)
+        m_camera->strafeLeft();
+
+    state = glfwGetKey(m_window, GLFW_KEY_D);
+    if(state == GLFW_PRESS)
+        m_camera->strafeRight();
+
+    state = glfwGetKey(m_window, GLFW_KEY_R);
+    if(state == GLFW_PRESS)
+        m_camera->moveUp();
+
+    state = glfwGetKey(m_window, GLFW_KEY_F);
+    if(state == GLFW_PRESS)
+        m_camera->moveDown();
 }
 
 void render()
@@ -97,7 +127,7 @@ void initializeContents()
     m_translation = glm::translate(m_identity, glm::vec3(0.0f, 0.0f, -40.0f));
     m_rotation = glm::rotate(m_identity, glm::radians(15.0f), glm::vec3(1.0f,0.0f,0.0f));
     m_rotation = glm::rotate(m_rotation, glm::radians(-25.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    m_projection = glm::perspective(glm::radians(60.0f), m_windowWidth / m_windowHeight, 0.1f, 50.0f);
+    m_projection = glm::perspective(glm::radians(60.0f), m_windowWidth / m_windowHeight, 0.1f, 200.0f);
 
     //m_modelTransform = m_projection * m_rotation * m_translation;
     //m_modelTransform = m_translation * m_rotation * m_projection;
@@ -164,7 +194,7 @@ GLboolean initializeWindow()
         return GL_FALSE;
     }
 
-    //glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
+    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
     glEnable(GL_DEPTH_TEST);
     glfwSetKeyCallback(m_window, key_callback);
     glfwSetCursorPosCallback(m_window, cursor_position_callback);

@@ -35,6 +35,7 @@ GLboolean initializeWindow();
 void initializeContents();
 void initializeOriginCube();
 void update();
+void checkInput();
 void render();
 
 #endif //CUBESTRETCH_CUBESTRETCHAPP_H
