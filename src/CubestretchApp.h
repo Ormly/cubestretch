@@ -9,6 +9,7 @@
 #include "renderer/Renderer.h"
 #include "objects/Cube.h"
 #include "objects/Camera.h"
+#include "objects/MouseInput.h"
 
 GLFWwindow* m_window;
 GLfloat m_windowWidth;
@@ -22,6 +23,7 @@ Renderer m_renderer;
 Shaders* m_shaders;
 
 Camera* m_camera;
+MouseInput* m_mouse;
 
 glm::mat4 m_identity;
 glm::mat4 m_translation;

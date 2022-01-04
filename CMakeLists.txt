@@ -30,7 +30,7 @@ add_executable(cubestretch
                src/objects/CubeFace.cpp
                src/objects/CubeFace.h
                src/objects/Camera.cpp
-               src/objects/Camera.h)
+               src/objects/Camera.h src/objects/MouseInput.cpp src/objects/MouseInput.h)
 
 # GLM
 find_package(GLM REQUIRED)

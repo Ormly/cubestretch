@@ -15,10 +15,6 @@ static void key_callback(GLFWwindow* glfwWindow, int key, int scancode, int acti
         glfwSetWindowShouldClose(glfwWindow, GLFW_TRUE);
 }
 
-static void cursor_position_callback(GLFWwindow* window, double x, double y)
-{
-}
-
 int main()
 {
     m_windowWidth = 1600.0f;
@@ -70,7 +66,8 @@ void checkInput()
 {
     double cursorX, cursorY;
     glfwGetCursorPos(m_window, &cursorX, &cursorY);
-    m_camera->mouseUpdate(glm::vec2(cursorX,cursorY));
+    m_mouse->setUpdatedPosition(glm::vec2(cursorX,cursorY));
+    m_camera->updateDirection(m_mouse->getPositionDelta());
 
     int state = glfwGetKey(m_window, GLFW_KEY_W);
     if(state == GLFW_PRESS)
@@ -88,11 +85,11 @@ void checkInput()
     if(state == GLFW_PRESS)
         m_camera->strafeRight();
 
-    state = glfwGetKey(m_window, GLFW_KEY_R);
+    state = glfwGetKey(m_window, GLFW_KEY_SPACE);
     if(state == GLFW_PRESS)
         m_camera->moveUp();
 
-    state = glfwGetKey(m_window, GLFW_KEY_F);
+    state = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT);
     if(state == GLFW_PRESS)
         m_camera->moveDown();
 }
@@ -119,6 +116,7 @@ void initializeContents()
     initializeOriginCube();
 
     m_camera = new Camera();
+    m_mouse = new MouseInput();
 
     //glViewport(0,0,m_windowWidth,m_windowHeight);
 
@@ -197,7 +195,7 @@ GLboolean initializeWindow()
     glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
     glEnable(GL_DEPTH_TEST);
     glfwSetKeyCallback(m_window, key_callback);
-    glfwSetCursorPosCallback(m_window, cursor_position_callback);
+    //glfwSetCursorPosCallback(m_window, cursor_position_callback);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     return GL_TRUE;

@@ -15,7 +15,7 @@ private:
 public:
     Camera();
     glm::mat4 getWorldToViewMatrix() const;
-    void mouseUpdate(const glm::vec2& updatedMousePosition);
+    void updateDirection(const glm::vec2& mousePositionDelta);
     void moveBackward();
     void moveForward();
     void strafeLeft();
