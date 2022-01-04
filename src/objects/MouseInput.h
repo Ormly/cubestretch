@@ -3,19 +3,28 @@
 
 #include <glm\glm.hpp>
 
+enum MouseState
+{
+    PRESSED,
+    RELEASED
+};
+
 class MouseInput
 {
 private:
     glm::vec2 m_previousPosition;
-    glm::vec2 m_updatedPosition;
+    glm::vec2 m_currentPosition;
     glm::vec2 m_positionDelta;
+    MouseState m_state;
 
 public:
     MouseInput();
-    void setUpdatedPosition(const glm::vec2& updatedPosition);
+    void setCurrentPosition(const glm::vec2& updatedPosition);
+    void setState(MouseState state);
     glm::vec2 getPreviousPosition() const;
-    glm::vec2 getUpdatedPosition() const;
+    glm::vec2 getCurrentPosition() const;
     glm::vec2 getPositionDelta() const;
+    MouseState getState() const;
 };
 
 

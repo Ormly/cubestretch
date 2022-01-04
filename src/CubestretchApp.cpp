@@ -66,39 +66,47 @@ void checkInput()
 {
     double cursorX, cursorY;
     glfwGetCursorPos(m_window, &cursorX, &cursorY);
-    m_mouse->setUpdatedPosition(glm::vec2(cursorX,cursorY));
-    m_camera->updateDirection(m_mouse->getPositionDelta());
 
-    int state = glfwGetKey(m_window, GLFW_KEY_W);
-    if(state == GLFW_PRESS)
+    int mouseButtonState = glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT);
+    if(mouseButtonState == GLFW_PRESS)
+        m_mouse->setState(PRESSED);
+    else
+        m_mouse->setState(RELEASED);
+
+    m_mouse->setCurrentPosition(glm::vec2(cursorX, cursorY));
+    if(m_mouse->getState() == RELEASED)
+        m_camera->updateDirection(m_mouse->getPositionDelta());
+
+    //std::cout << "Current Mouse X = " << m_mouse->getCurrentPosition().x << " | Y = " << m_mouse->getCurrentPosition().y << std::endl;
+
+    int keyState = glfwGetKey(m_window, GLFW_KEY_W);
+    if(keyState == GLFW_PRESS)
         m_camera->moveForward();
 
-    state = glfwGetKey(m_window, GLFW_KEY_S);
-    if(state == GLFW_PRESS)
+    keyState = glfwGetKey(m_window, GLFW_KEY_S);
+    if(keyState == GLFW_PRESS)
         m_camera->moveBackward();
 
-    state = glfwGetKey(m_window, GLFW_KEY_A);
-    if(state == GLFW_PRESS)
+    keyState = glfwGetKey(m_window, GLFW_KEY_A);
+    if(keyState == GLFW_PRESS)
         m_camera->strafeLeft();
 
-    state = glfwGetKey(m_window, GLFW_KEY_D);
-    if(state == GLFW_PRESS)
+    keyState = glfwGetKey(m_window, GLFW_KEY_D);
+    if(keyState == GLFW_PRESS)
         m_camera->strafeRight();
 
-    state = glfwGetKey(m_window, GLFW_KEY_SPACE);
-    if(state == GLFW_PRESS)
+    keyState = glfwGetKey(m_window, GLFW_KEY_SPACE);
+    if(keyState == GLFW_PRESS)
         m_camera->moveUp();
 
-    state = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT);
-    if(state == GLFW_PRESS)
+    keyState = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT);
+    if(keyState == GLFW_PRESS)
         m_camera->moveDown();
 }
 
 void render()
 {
     m_renderer.clear();
-
-    std::cout << "Rendering...\n" << std::endl;
 
     m_modelTransform = m_projection * m_camera->getWorldToViewMatrix() * m_translation * m_rotation;
     m_shaders->setUniformMat4f("u_modelTransform", m_modelTransform);
