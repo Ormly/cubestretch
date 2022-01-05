@@ -23,9 +23,9 @@ void Camera::updateDirection(const glm::vec2 &mousePositionDelta)
     else
     {
         const float ROTATIONAL_SPEED = 0.1f;
-        crossedViewDirection =  glm::cross(m_direction, m_UP);
+        m_crossedViewDirection =  glm::cross(m_direction, m_UP);
         glm::mat4 rotator = glm::rotate(glm::radians(-mousePositionDelta.x * ROTATIONAL_SPEED), m_UP) *
-                            glm::rotate(glm::radians(-mousePositionDelta.y * ROTATIONAL_SPEED), crossedViewDirection);
+                            glm::rotate(glm::radians(-mousePositionDelta.y * ROTATIONAL_SPEED), m_crossedViewDirection);
 
         m_direction = glm::mat3(rotator) * m_direction;
     }
@@ -43,12 +43,12 @@ void Camera::moveForward()
 
 void Camera::strafeLeft()
 {
-    m_position += -MOVEMENT_SPEED * crossedViewDirection;
+    m_position += -MOVEMENT_SPEED * m_crossedViewDirection;
 }
 
 void Camera::strafeRight()
 {
-    m_position += MOVEMENT_SPEED * crossedViewDirection;
+    m_position += MOVEMENT_SPEED * m_crossedViewDirection;
 }
 
 void Camera::moveUp()
@@ -59,4 +59,9 @@ void Camera::moveUp()
 void Camera::moveDown()
 {
     m_position += -MOVEMENT_SPEED * m_UP;
+}
+
+glm::vec3 Camera::getDirection() const
+{
+    return m_crossedViewDirection;
 }

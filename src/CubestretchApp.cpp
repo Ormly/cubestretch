@@ -4,6 +4,11 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
+namespace
+{
+    GLboolean isSHIFTDown;
+}
+
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
@@ -11,8 +16,8 @@ static void error_callback(int error, const char* description)
 
 static void key_callback(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods)
 {
-    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(glfwWindow, GLFW_TRUE);
+    //if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        //glfwSetWindowShouldClose(glfwWindow, GLFW_TRUE);
 }
 
 int main()
@@ -59,6 +64,7 @@ int main()
 
 void update()
 {
+    //glfwSetCursorPos(m_window, m_windowWidth / 2, m_windowHeight / 2);
     checkInput();
 }
 
@@ -78,8 +84,24 @@ void checkInput()
         m_camera->updateDirection(m_mouse->getPositionDelta());
 
     //std::cout << "Current Mouse X = " << m_mouse->getCurrentPosition().x << " | Y = " << m_mouse->getCurrentPosition().y << std::endl;
+    /*
+    std::cout << "Camera direction x=" <<
+                 m_camera->getDirection().x <<
+                 " y=" <<
+                 m_camera->getDirection().x <<
+                 " z=" <<
+                 m_camera->getDirection().z <<
+                 std::endl;
+     */
 
-    int keyState = glfwGetKey(m_window, GLFW_KEY_W);
+    int keyState = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT);
+    isSHIFTDown = keyState == GLFW_PRESS;
+
+    keyState = glfwGetKey(m_window, GLFW_KEY_Q);
+    if (keyState == GLFW_PRESS)
+        glfwSetWindowShouldClose(m_window, GLFW_TRUE);
+
+    keyState = glfwGetKey(m_window, GLFW_KEY_W);
     if(keyState == GLFW_PRESS)
         m_camera->moveForward();
 
@@ -99,7 +121,7 @@ void checkInput()
     if(keyState == GLFW_PRESS)
         m_camera->moveUp();
 
-    keyState = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT);
+    keyState = glfwGetKey(m_window, GLFW_KEY_LEFT_CONTROL);
     if(keyState == GLFW_PRESS)
         m_camera->moveDown();
 }
@@ -126,13 +148,11 @@ void initializeContents()
     m_camera = new Camera();
     m_mouse = new MouseInput();
 
-    //glViewport(0,0,m_windowWidth,m_windowHeight);
-
     m_identity = glm::mat4(1.0f);
-    //m_screenToNDC = glm::ortho(0.0f, m_windowWidth, 0.0f, m_windowHeight, 0.1f, 20.0f);
     m_translation = glm::translate(m_identity, glm::vec3(0.0f, 0.0f, -40.0f));
-    m_rotation = glm::rotate(m_identity, glm::radians(15.0f), glm::vec3(1.0f,0.0f,0.0f));
-    m_rotation = glm::rotate(m_rotation, glm::radians(-25.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //m_rotation = glm::rotate(m_identity, glm::radians(15.0f), glm::vec3(1.0f,0.0f,0.0f));
+    //m_rotation = glm::rotate(m_rotation, glm::radians(-25.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    m_rotation = m_identity;
     m_projection = glm::perspective(glm::radians(60.0f), m_windowWidth / m_windowHeight, 0.1f, 200.0f);
 
     //m_modelTransform = m_projection * m_rotation * m_translation;
@@ -203,7 +223,9 @@ GLboolean initializeWindow()
     glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
     glEnable(GL_DEPTH_TEST);
     glfwSetKeyCallback(m_window, key_callback);
+    glfwFocusWindow(m_window);
     //glfwSetCursorPosCallback(m_window, cursor_position_callback);
+    //glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     return GL_TRUE;

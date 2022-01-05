@@ -21,14 +21,14 @@ void Cube::updateVertices()
     m_vertices.clear();
     m_vertices =
     {
-        m_center.x - m_halfSideLength, m_center.y - m_halfSideLength, m_center.z + m_halfSideLength, //front bottom left
-        m_center.x + m_halfSideLength, m_center.y - m_halfSideLength, m_center.z + m_halfSideLength, //front bottom right
-        m_center.x + m_halfSideLength, m_center.y + m_halfSideLength, m_center.z + m_halfSideLength, //front top right
-        m_center.x - m_halfSideLength, m_center.y + m_halfSideLength, m_center.z + m_halfSideLength, //front top left
-        m_center.x - m_halfSideLength, m_center.y - m_halfSideLength, m_center.z - m_halfSideLength, //back bottom left
-        m_center.x + m_halfSideLength, m_center.y - m_halfSideLength, m_center.z - m_halfSideLength, //back bottom right
-        m_center.x + m_halfSideLength, m_center.y + m_halfSideLength, m_center.z - m_halfSideLength, //back top right
-        m_center.x - m_halfSideLength, m_center.y + m_halfSideLength, m_center.z - m_halfSideLength, //back top left
+        m_center.x - m_halfSideLength, m_center.y - m_halfSideLength, m_center.z + m_halfSideLength, //0 (0,1,2), front bottom left
+        m_center.x + m_halfSideLength, m_center.y - m_halfSideLength, m_center.z + m_halfSideLength, //1 (3,4,5), front bottom right
+        m_center.x + m_halfSideLength, m_center.y + m_halfSideLength, m_center.z + m_halfSideLength, //2 (6,7,8), front top right
+        m_center.x - m_halfSideLength, m_center.y + m_halfSideLength, m_center.z + m_halfSideLength, //3 (9,10,11), front top left
+        m_center.x - m_halfSideLength, m_center.y - m_halfSideLength, m_center.z - m_halfSideLength, //4 (12,13,14), back bottom left
+        m_center.x + m_halfSideLength, m_center.y - m_halfSideLength, m_center.z - m_halfSideLength, //5 (15,16,17), back bottom right
+        m_center.x + m_halfSideLength, m_center.y + m_halfSideLength, m_center.z - m_halfSideLength, //6 (18,19,20), back top right
+        m_center.x - m_halfSideLength, m_center.y + m_halfSideLength, m_center.z - m_halfSideLength, //7 (21,22,23), back top left
     };
 }
 

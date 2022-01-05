@@ -11,7 +11,7 @@ private:
     const glm::vec3 m_UP;
     glm::vec2 m_previousMousePosition;
     static const float MOVEMENT_SPEED;
-    glm::vec3 crossedViewDirection;
+    glm::vec3 m_crossedViewDirection;
 public:
     Camera();
     glm::mat4 getWorldToViewMatrix() const;
@@ -22,7 +22,7 @@ public:
     void strafeRight();
     void moveUp();
     void moveDown();
-
+    glm::vec3 getDirection() const;
 };
 
 
