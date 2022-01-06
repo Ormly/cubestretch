@@ -11,6 +11,13 @@
 #include "objects/Camera.h"
 #include "objects/MouseInput.h"
 
+enum State
+{
+    NONE,
+    BUILDING,
+    SELECTING
+};
+
 GLFWwindow* m_window;
 GLfloat m_windowWidth;
 GLfloat m_windowHeight;
@@ -31,7 +38,10 @@ glm::mat4 m_rotation;
 glm::mat4 m_projection;
 glm::mat4 m_modelTransform;
 
+State m_state;
 std::vector<Cube*> m_cubes;
+GLuint m_selectedCubeID;
+Cube* m_previewCube;
 
 GLboolean initializeWindow();
 void initializeContents();
@@ -39,5 +49,10 @@ void initializeOriginCube();
 void update();
 void checkInput();
 void render();
+GLuint createCube(const Cube* sourceCube, Direction direction);
+void createPreviewCube(const Cube* sourceCube, Direction direction);
+std::array<GLint, 6> calculateAndSetNeighbors(glm::vec3 cubeCenter);
+Cube* getCubeFromID(GLuint cubeID);
+GLboolean wait();
 
 #endif //CUBESTRETCH_CUBESTRETCHAPP_H

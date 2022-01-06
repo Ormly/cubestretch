@@ -7,6 +7,16 @@
 #include <array>
 #include <memory>
 
+enum Direction
+{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+    FRONT,
+    BACK
+};
+
 class Cube
 {
 private:
@@ -26,24 +36,27 @@ private:
     VertexBuffer* m_vertexBuffer;
     IndexBuffer* m_indexBuffer;
     //std::array<CubeFace*, 6> m_cubeFaces; //up,down,left,right,front,back
-    std::array<Cube*, 6> m_neighbors; //up,down,left,right,front,back
+    std::array<GLint, 6> m_neighbors; //up,down,left,right,front,back
     glm::vec4 m_color;
+    GLuint m_id;
 
     void updateVertices();
     void resetBuffer();
 public:
-    Cube(glm::vec3 center, GLfloat halfSideLength, std::array<Cube*, 6> &neighbors, glm::vec4 color);
+    Cube(glm::vec3 center, GLfloat halfSideLength, std::array<GLint, 6> &neighbors, glm::vec4 color, GLuint id);
     glm::vec3 getCenter() const;
-    std::array<Cube*, 6> getNeighbors() const;
-    Cube* getUpNeighbor() const;
-    Cube* getDownNeighbor() const;
-    Cube* getLeftNeighbor() const;
-    Cube* getRightNeighbor() const;
-    Cube* getFrontNeighbor() const;
-    Cube* getBackNeighbor() const;
+    void addNeighbor(GLuint neighborID, Direction direction);
+    std::array<GLint, 6> getNeighbors() const;
+    GLint getUpNeighbor() const;
+    GLint getDownNeighbor() const;
+    GLint getLeftNeighbor() const;
+    GLint getRightNeighbor() const;
+    GLint getFrontNeighbor() const;
+    GLint getBackNeighbor() const;
     VertexArray* getVertexArray() const;
     IndexBuffer* getIndexBuffer() const;
     glm::vec4 getColor() const;
+    GLuint getID() const;
 };
 
 #endif //CUBESTRETCH_CUBE_H

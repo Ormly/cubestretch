@@ -1,7 +1,7 @@
 #include "Cube.h"
 
-Cube::Cube(glm::vec3 center, GLfloat halfSideLength, std::array<Cube*, 6> &neighbors, glm::vec4 color):
-m_center(center), m_halfSideLength(halfSideLength), m_neighbors(neighbors), m_color(color)
+Cube::Cube(glm::vec3 center, GLfloat halfSideLength, std::array<GLint, 6> &neighbors, glm::vec4 color, GLuint id):
+m_center(center), m_halfSideLength(halfSideLength), m_neighbors(neighbors), m_color(color), m_id(id)
 {
     updateVertices();
 
@@ -57,37 +57,37 @@ glm::vec3 Cube::getCenter() const
     return m_center;
 }
 
-std::array<Cube *, 6> Cube::getNeighbors() const
+std::array<GLint, 6> Cube::getNeighbors() const
 {
     return m_neighbors;
 }
 
-Cube *Cube::getUpNeighbor() const
+GLint Cube::getUpNeighbor() const
 {
     return m_neighbors.at(0);
 }
 
-Cube *Cube::getDownNeighbor() const
+GLint Cube::getDownNeighbor() const
 {
     return m_neighbors.at(1);
 }
 
-Cube *Cube::getLeftNeighbor() const
+GLint Cube::getLeftNeighbor() const
 {
     return m_neighbors.at(2);
 }
 
-Cube *Cube::getRightNeighbor() const
+GLint Cube::getRightNeighbor() const
 {
     return m_neighbors.at(3);
 }
 
-Cube *Cube::getFrontNeighbor() const
+GLint Cube::getFrontNeighbor() const
 {
     return m_neighbors.at(4);
 }
 
-Cube *Cube::getBackNeighbor() const
+GLint Cube::getBackNeighbor() const
 {
     return m_neighbors.at(5);
 }
@@ -95,5 +95,35 @@ Cube *Cube::getBackNeighbor() const
 glm::vec4 Cube::getColor() const
 {
     return m_color;
+}
+
+void Cube::addNeighbor(GLuint neighbor, Direction direction)
+{
+    switch(direction)
+    {
+        case UP:
+            m_neighbors[0] = neighbor;
+            break;
+        case DOWN:
+            m_neighbors[1] = neighbor;
+            break;
+        case LEFT:
+            m_neighbors[2] = neighbor;
+            break;
+        case RIGHT:
+            m_neighbors[3] = neighbor;
+            break;
+        case FRONT:
+            m_neighbors[4] = neighbor;
+            break;
+        case BACK:
+            m_neighbors[5] = neighbor;
+            break;
+    }
+}
+
+GLuint Cube::getID() const
+{
+    return m_id;
 }
 
