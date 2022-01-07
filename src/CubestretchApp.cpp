@@ -6,17 +6,17 @@
 
 namespace
 {
-    GLboolean isSHIFTDown;
+    GLboolean SHIFTIsDown;
     GLfloat halfSideCubeLength = 3.0f;
     GLuint lastCubeID = 0;
     glm::vec4 cubeColor({1.0f, 1.0f, 1.0f, 1.0f});
-    GLuint waitTime = 5;
-    GLuint waitTimer = waitTime;
+    glm::vec4 selectedCubeColor({0.058f, 0.541f, 0.258f, 1.0f});
 
-    GLboolean keyWRepeat = false;
-    GLboolean keyARepeat = false;
-    GLboolean keySRepeat = false;
-    GLboolean keyDRepeat = false;
+    GLboolean keyStateWRepeat = false;
+    GLboolean keyStateARepeat = false;
+    GLboolean keyStateSRepeat = false;
+    GLboolean keyStateDRepeat = false;
+    GLboolean keyStateESCAPERepeat = false;
 }
 
 static void error_callback(int error, const char* description)
@@ -74,7 +74,6 @@ void update()
 
 void checkInput()
 {
-    int keyState;
     double cursorX, cursorY;
     glfwGetCursorPos(m_window, &cursorX, &cursorY);
 
@@ -88,25 +87,27 @@ void checkInput()
     if(m_mouse->getState() == RELEASED)
         m_camera->updateDirection(m_mouse->getPositionDelta());
 
-    int keyStateW, keyStateA, keyStateS, keyStateD;
-    keyStateW = glfwGetKey(m_window, GLFW_KEY_W);
-    keyStateA = glfwGetKey(m_window, GLFW_KEY_A);
-    keyStateS = glfwGetKey(m_window, GLFW_KEY_S);
-    keyStateD = glfwGetKey(m_window, GLFW_KEY_D);
+    int keyStateW = glfwGetKey(m_window, GLFW_KEY_W);
+    int keyStateA = glfwGetKey(m_window, GLFW_KEY_A);
+    int keyStateS = glfwGetKey(m_window, GLFW_KEY_S);
+    int keyStateD = glfwGetKey(m_window, GLFW_KEY_D);
+    int keyStateESCAPE = glfwGetKey(m_window, GLFW_KEY_ESCAPE);
+    int keyStateB = glfwGetKey(m_window, GLFW_KEY_B);
+    int keyStateSHIFT = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT);
+    int keyStateQ = glfwGetKey(m_window, GLFW_KEY_Q);
+    int keyStateENTER = glfwGetKey(m_window, GLFW_KEY_ENTER);
+    int keyStateSPACE = glfwGetKey(m_window, GLFW_KEY_SPACE);
+    int keyStateCTRL = glfwGetKey(m_window, GLFW_KEY_LEFT_CONTROL);
 
-    keyState = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT);
-    isSHIFTDown = keyState == GLFW_PRESS;
-
-    keyState = glfwGetKey(m_window, GLFW_KEY_Q);
-    if (keyState == GLFW_PRESS)
+    if (keyStateQ == GLFW_PRESS)
         glfwSetWindowShouldClose(m_window, GLFW_TRUE);
 
+    SHIFTIsDown = (keyStateSHIFT == GLFW_PRESS);
 
     if(m_state == NONE)
     {
-        keyState = glfwGetKey(m_window, GLFW_KEY_B);
-        if(keyState == GLFW_PRESS)
-            m_state = BUILDING;
+        if(keyStateB == GLFW_PRESS)
+            m_state = SELECTING;
 
         if(keyStateW == GLFW_PRESS)
             m_camera->moveForward();
@@ -120,104 +121,130 @@ void checkInput()
         if(keyStateD == GLFW_PRESS)
             m_camera->strafeRight();
 
-        keyState = glfwGetKey(m_window, GLFW_KEY_SPACE);
-        if(keyState == GLFW_PRESS)
+        if(keyStateSPACE == GLFW_PRESS)
             m_camera->moveUp();
 
-        keyState = glfwGetKey(m_window, GLFW_KEY_LEFT_CONTROL);
-        if(keyState == GLFW_PRESS)
+        if(keyStateCTRL == GLFW_PRESS)
             m_camera->moveDown();
+    }
+
+    Cube* selectedCube = getCubeFromID(m_selectedCubeID);
+    GLint neighborID;
+
+    bool keyStateWIsValid = !keyStateWRepeat && keyStateW == GLFW_PRESS;
+    bool keyStateAIsValid = !keyStateARepeat && keyStateA == GLFW_PRESS;
+    bool keyStateSIsValid = !keyStateSRepeat && keyStateS == GLFW_PRESS;
+    bool keyStateDIsValid = !keyStateDRepeat && keyStateD == GLFW_PRESS;
+
+    if(m_state == SELECTING)
+    {
+        if(!keyStateESCAPERepeat && keyStateESCAPE == GLFW_PRESS)
+        {
+            keyStateESCAPERepeat = true;
+            m_state = NONE;
+        }
+        else if(keyStateESCAPE == GLFW_RELEASE)
+            keyStateESCAPERepeat = false;
+
+        if(keyStateENTER == GLFW_PRESS)
+            m_state = BUILDING;
+
+        if(keyStateWIsValid)
+        {
+            keyStateWRepeat = true;
+            neighborID = SHIFTIsDown ? selectedCube->getBackNeighbor() : selectedCube->getUpNeighbor();
+            if(neighborID > -1)
+                m_selectedCubeID = neighborID;
+        }
+        else if(keyStateW == GLFW_RELEASE)
+            keyStateWRepeat = false;
+
+        if(keyStateAIsValid)
+        {
+            keyStateARepeat = true;
+            neighborID = selectedCube->getLeftNeighbor();
+            if(neighborID > -1)
+                m_selectedCubeID = neighborID;
+        }
+        else if(keyStateA == GLFW_RELEASE)
+            keyStateARepeat = false;
+
+        if(keyStateSIsValid)
+        {
+            keyStateSRepeat = true;
+            neighborID = SHIFTIsDown ? selectedCube->getFrontNeighbor() : selectedCube->getDownNeighbor();
+            if(neighborID > -1)
+                m_selectedCubeID = neighborID;
+        }
+        else if(keyStateS == GLFW_RELEASE)
+            keyStateSRepeat = false;
+
+        if(keyStateDIsValid)
+        {
+            keyStateDRepeat = true;
+            neighborID = selectedCube->getRightNeighbor();
+            if(neighborID > -1)
+                m_selectedCubeID = neighborID;
+        }
+        else if(keyStateD == GLFW_RELEASE)
+            keyStateDRepeat = false;
+
     }
 
     if(m_state == BUILDING)
     {
-        keyState = glfwGetKey(m_window, GLFW_KEY_ESCAPE);
-        if(keyState == GLFW_PRESS)
-            m_state = NONE;
-
-        if(!keyWRepeat && !isSHIFTDown && keyStateW == GLFW_PRESS)
+        if(!keyStateESCAPERepeat && keyStateESCAPE == GLFW_PRESS)
         {
-            keyWRepeat = true;
-            Cube* selectedCube = getCubeFromID(m_selectedCubeID);
-            //TODO check for nullptr
-            if(selectedCube->getUpNeighbor() == -1)
-                createCube(selectedCube, UP);
+            keyStateESCAPERepeat = true;
+            m_state = SELECTING;
+        }
+        else if(keyStateESCAPE == GLFW_RELEASE)
+            keyStateESCAPERepeat = false;
+
+        if(keyStateWIsValid)
+        {
+            keyStateWRepeat = true;
+            neighborID = SHIFTIsDown ? selectedCube->getBackNeighbor() : selectedCube->getUpNeighbor();
+            if(neighborID == -1)
+                createCube(selectedCube, SHIFTIsDown ? BACK : UP);
         }
         else if(keyStateW == GLFW_RELEASE)
-            keyWRepeat = false;
+            keyStateWRepeat = false;
 
-        if(!keyWRepeat && isSHIFTDown && keyStateW == GLFW_PRESS)
+        if(keyStateAIsValid)
         {
-            keyWRepeat = true;
-            Cube* selectedCube = getCubeFromID(m_selectedCubeID);
-            //TODO check for nullptr
-            if(selectedCube->getBackNeighbor() == -1)
-                createCube(selectedCube, BACK);
-        }
-        else if(keyStateW == GLFW_RELEASE)
-            keyWRepeat = false;
-
-        if(!keyARepeat && keyStateA == GLFW_PRESS)
-        {
-            keyARepeat = true;
-            Cube* selectedCube = getCubeFromID(m_selectedCubeID);
-            //TODO check for nullptr
-            if(selectedCube->getLeftNeighbor() == -1)
+            keyStateARepeat = true;
+            neighborID = selectedCube->getLeftNeighbor();
+            if(neighborID == -1)
                 createCube(selectedCube, LEFT);
         }
         else if(keyStateA == GLFW_RELEASE)
-            keyARepeat = false;
+            keyStateARepeat = false;
 
-        if(!keySRepeat && !isSHIFTDown && keyStateS == GLFW_PRESS)
+        if(keyStateSIsValid)
         {
-            keySRepeat = true;
-            Cube* selectedCube = getCubeFromID(m_selectedCubeID);
-            //TODO check for nullptr
-            if(selectedCube->getDownNeighbor() == -1)
-                createCube(selectedCube, DOWN);
+            keyStateSRepeat = true;
+            neighborID = SHIFTIsDown ? selectedCube->getFrontNeighbor() : selectedCube->getDownNeighbor();
+            if(neighborID == -1)
+                createCube(selectedCube, SHIFTIsDown ? FRONT : DOWN);
         }
         else if(keyStateS == GLFW_RELEASE)
-            keySRepeat = false;
+            keyStateSRepeat = false;
 
-        if(!keySRepeat && isSHIFTDown && keyStateS == GLFW_PRESS)
+        if(keyStateDIsValid)
         {
-            keySRepeat = true;
-            Cube* selectedCube = getCubeFromID(m_selectedCubeID);
-            //TODO check for nullptr
-            if(selectedCube->getFrontNeighbor() == -1)
-                createCube(selectedCube, FRONT);
-        }
-        else if(keyStateS == GLFW_RELEASE)
-            keySRepeat = false;
-
-        if(!keyDRepeat && keyStateD == GLFW_PRESS)
-        {
-            keyDRepeat = true;
-            Cube* selectedCube = getCubeFromID(m_selectedCubeID);
-            //TODO check for nullptr
-            if(selectedCube->getRightNeighbor() == -1)
+            keyStateDRepeat = true;
+            neighborID = selectedCube->getRightNeighbor();
+            if(neighborID == -1)
                 createCube(selectedCube, RIGHT);
         }
         else if(keyStateD == GLFW_RELEASE)
-            keyDRepeat = false;
+            keyStateDRepeat = false;
     }
 
     std::cout << "State: " << ((m_state == NONE) ? "None" : ((m_state == BUILDING) ? "Building" : "Selecting")) << std::endl;
     //std::cout << "A: " << ((keyStateA == GLFW_PRESS) ? "pressed, " : "not pressed, ") << ((keyStateA == GLFW_RELEASE) ? "released, " : "not released, ") << ((keyStateA == GLFW_REPEAT) ? "repeat" : "not repeat") << std::endl;
-}
-
-GLboolean wait()
-{
-    if(waitTimer > 0)
-    {
-        waitTimer--;
-        return true;
-    }
-    else
-    {
-        waitTimer = waitTime;
-        return false;
-    }
+    std::cout << "Escape: " << ((keyStateESCAPE == GLFW_PRESS) ? "pressed, " : "not pressed, ") << std::endl;
 }
 
 void render()
@@ -229,7 +256,12 @@ void render()
 
     for(Cube* cube : m_cubes)
     {
-        glm::vec4 cubeColor = cube->getColor();
+        glm::vec4 cubeColor;
+        if(m_state == SELECTING && cube->getID() == m_selectedCubeID)
+            cubeColor = selectedCubeColor;
+        else
+            cubeColor = cube->getColor();
+
         m_shaders->setUniform4f("u_color", cubeColor.x, cubeColor.y, cubeColor.z, cubeColor.w);
         m_renderer.draw(*(cube->getVertexArray()), *(cube->getIndexBuffer()), *m_shaders);
     }
@@ -271,7 +303,6 @@ GLuint createCube(const Cube* sourceCube, Direction direction)
 {
     glm::vec3 cubeCenter;
     glm::vec3 sourceCubeCenter = sourceCube->getCenter();
-    std::array<GLint, 6> neighbors{};
     Cube* cubeToAdd;
     GLfloat cubeSideLength = halfSideCubeLength * 2;
 
@@ -297,7 +328,7 @@ GLuint createCube(const Cube* sourceCube, Direction direction)
             break;
     }
 
-    neighbors = calculateAndSetNeighbors(cubeCenter);
+    std::array<GLint, 6> neighbors = calculateAndSetNeighbors(cubeCenter);
     cubeToAdd = new Cube(cubeCenter, halfSideCubeLength, neighbors, cubeColor, lastCubeID++);
     m_cubes.push_back(cubeToAdd);
 
@@ -340,13 +371,13 @@ std::array<GLint, 6> calculateAndSetNeighbors(glm::vec3 cubeCenter)
             cube->addNeighbor(lastCubeID, UP);
         }
 
-        if((cubeCenter.z + halfSideCubeLength * 2) == currentCubeCenter.x && (cubeCenter.y == currentCubeCenter.y && cubeCenter.z == currentCubeCenter.z))
+        if((cubeCenter.z + halfSideCubeLength * 2) == currentCubeCenter.z && (cubeCenter.x == currentCubeCenter.x && cubeCenter.y == currentCubeCenter.y))
         {
             neighbors.at(4) = currentCubeID;
             cube->addNeighbor(lastCubeID, BACK);
         }
 
-        if((cubeCenter.z - halfSideCubeLength * 2) == currentCubeCenter.x && (cubeCenter.x == currentCubeCenter.x && cubeCenter.y == currentCubeCenter.y))
+        if((cubeCenter.z - halfSideCubeLength * 2) == currentCubeCenter.z && (cubeCenter.x == currentCubeCenter.x && cubeCenter.y == currentCubeCenter.y))
         {
             neighbors.at(5) = currentCubeID;
             cube->addNeighbor(lastCubeID, FRONT);

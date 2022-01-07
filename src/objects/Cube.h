@@ -57,6 +57,7 @@ public:
     IndexBuffer* getIndexBuffer() const;
     glm::vec4 getColor() const;
     GLuint getID() const;
+    void setColor(glm::vec4 color);
 };
 
 #endif //CUBESTRETCH_CUBE_H

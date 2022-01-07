@@ -127,3 +127,8 @@ GLuint Cube::getID() const
     return m_id;
 }
 
+void Cube::setColor(glm::vec4 color)
+{
+    m_color = color;
+}
+
