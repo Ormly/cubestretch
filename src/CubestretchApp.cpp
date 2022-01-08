@@ -9,8 +9,11 @@ namespace
     GLboolean SHIFTIsDown;
     GLfloat halfSideCubeLength = 3.0f;
     GLuint lastCubeID = 0;
-    glm::vec4 cubeColor({1.0f, 1.0f, 1.0f, 1.0f});
-    glm::vec4 selectedCubeColor({0.058f, 0.541f, 0.258f, 1.0f});
+    glm::vec3 cubeColor({0.772f, 0.501f, 0.0f});
+    glm::vec3 selectedCubeColor({0.0f, 0.498f, 0.137f});
+
+    GLfloat edgeStripWidth = 0.25f;
+    glm::vec4 edgeStripColor({0.631f, 0.031f, 0.0f, 1.0f});
 
     GLboolean keyStateWRepeat = false;
     GLboolean keyStateARepeat = false;
@@ -42,7 +45,7 @@ int main()
 
     initializeContents();
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     while (!glfwWindowShouldClose(m_window))
     {
@@ -256,13 +259,11 @@ void render()
 
     for(Cube* cube : m_cubes)
     {
-        glm::vec4 cubeColor;
         if(m_state == SELECTING && cube->getID() == m_selectedCubeID)
-            cubeColor = selectedCubeColor;
+            cube->setCubeColor(selectedCubeColor);
         else
-            cubeColor = cube->getColor();
+            cube->setCubeColor(cubeColor);
 
-        m_shaders->setUniform4f("u_color", cubeColor.x, cubeColor.y, cubeColor.z, cubeColor.w);
         m_renderer.draw(*(cube->getVertexArray()), *(cube->getIndexBuffer()), *m_shaders);
     }
 }
@@ -292,7 +293,7 @@ void initializeOriginCube()
     neighbors.fill(-1);
     glm::vec3 originCubeCenter = {0.0f, 0.0f, 0.0f};
     //glm::vec3 originCubeCenter = {m_windowWidth / 2, m_windowHeight / 2, -1.0f};
-    Cube* originCube = new Cube(originCubeCenter, halfSideCubeLength, neighbors, cubeColor, lastCubeID++);
+    Cube* originCube = new Cube(originCubeCenter, halfSideCubeLength, neighbors, cubeColor, lastCubeID++, edgeStripWidth, edgeStripColor);
     m_cubes.push_back(originCube);
 
     m_selectedCubeID = originCube->getID();
@@ -329,7 +330,7 @@ GLuint createCube(const Cube* sourceCube, Direction direction)
     }
 
     std::array<GLint, 6> neighbors = calculateAndSetNeighbors(cubeCenter);
-    cubeToAdd = new Cube(cubeCenter, halfSideCubeLength, neighbors, cubeColor, lastCubeID++);
+    cubeToAdd = new Cube(cubeCenter, halfSideCubeLength, neighbors, cubeColor, lastCubeID++, edgeStripWidth, edgeStripColor);
     m_cubes.push_back(cubeToAdd);
 
     m_selectedCubeID = cubeToAdd->getID();
