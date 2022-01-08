@@ -9,19 +9,10 @@ namespace
     GLboolean SHIFTIsDown;
     GLfloat halfSideCubeLength = 3.0f;
     GLuint lastCubeID = 0;
-    //glm::vec3 cubeColor({0.631f, 0.031f, 0.0f}); //lighter red
     glm::vec3 cubeColor({0.541f, 0.011f, 0.011f}); //blood red
-
-    //glm::vec3 selectedCubeColor({0.0f, 0.498f, 0.137f}); //lighter green
-    //glm::vec3 selectedCubeColor({0.003f, 0.337f, 0.094f}); //darker green
     glm::vec3 selectedCubeColor({0.003f, 0.266f, 0.129f}); //forest green
-
-    GLfloat edgeStripWidth = 0.25f;
-    //glm::vec3 edgeStripColor({0.f, 0.0f, 0.0f}); //black
-    //glm::vec3 edgeStripColor({0.843f, 0.513f, 0.113f}); //lighter orange
-    //glm::vec3 edgeStripColor({0.921f, 0.392f, 0.0f}); //darker orange
-    //glm::vec3 edgeStripColor({0.831f, 0.686f, 0.215f}); //gold
     glm::vec3 edgeStripColor({0.647f, 0.486f, 0.0f}); //darker gold
+    GLfloat edgeStripWidth = 0.25f;
 
     GLboolean keyStateWRepeat = false;
     GLboolean keyStateARepeat = false;
@@ -53,8 +44,6 @@ int main()
 
     initializeContents();
 
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
     while (!glfwWindowShouldClose(m_window))
     {
         GLdouble currentTime = glfwGetTime();
@@ -79,7 +68,6 @@ int main()
 
 void update()
 {
-    //glfwSetCursorPos(m_window, m_windowWidth / 2, m_windowHeight / 2);
     checkInput();
 }
 
@@ -305,7 +293,6 @@ void initializeOriginCube()
     m_cubes.push_back(originCube);
 
     m_selectedCubeID = originCube->getID();
-    m_previewCube = nullptr;
 }
 
 GLuint createCube(const Cube* sourceCube, Direction direction)
@@ -450,10 +437,6 @@ GLboolean initializeWindow()
     glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
     glEnable(GL_DEPTH_TEST);
     glfwFocusWindow(m_window);
-    //glfwSetCursorPosCallback(m_window, cursor_position_callback);
-    //glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    //glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-    //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     return GL_TRUE;

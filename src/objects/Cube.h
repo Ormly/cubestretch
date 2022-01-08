@@ -1,7 +1,7 @@
 #ifndef CUBESTRETCH_CUBE_H
 #define CUBESTRETCH_CUBE_H
 
-#include "CubeFace.h"
+#include <glm/glm.hpp>
 #include "../renderer/VertexArray.h"
 #include "../renderer/IndexBuffer.h"
 #include <array>
