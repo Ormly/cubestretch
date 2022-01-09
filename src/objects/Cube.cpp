@@ -21,7 +21,7 @@ Cube::Cube(glm::vec3 center, GLfloat halfSideLength, std::array<GLint, 6> &neigh
 }
 
 //This is the dumbest way of doing things, I know.
-//1/8th of the way in I realized how dumb it was, but by then I was committed. Should have of course used a texture or something instead.
+//1/8th of the way in I realized how horrible it was, but by then I was committed. Should have of course used a texture or something instead.
 void Cube::updateVertices()
 {
     m_vertices.clear();
@@ -58,6 +58,9 @@ void Cube::updateVertices()
         cubeColorX, cubeColorY, cubeColorZ,
         centerX - m_halfSideLength + gap, centerY + m_halfSideLength - gap, centerZ - m_halfSideLength + gap, //7 back top left
         cubeColorX, cubeColorY, cubeColorZ,
+
+
+        //TODO fix duplicate edges
 
         /* ##Edges## */
         /* ##Front face edges## */

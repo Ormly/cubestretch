@@ -23,9 +23,9 @@ add_executable(cubestretch
                src/renderer/Shaders.h
                res/shaders/FragmentShader.fs
                res/shaders/VertexShader.vs
-        src/objects/Cube.cpp
+               src/objects/Cube.cpp
                src/objects/Cube.h
-        src/objects/Camera.cpp
+               src/objects/Camera.cpp
                src/objects/Camera.h
                src/objects/MouseInput.cpp
                src/objects/MouseInput.h)

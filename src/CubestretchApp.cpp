@@ -6,14 +6,15 @@
 
 namespace
 {
-    GLboolean SHIFTIsDown;
     GLfloat halfSideCubeLength = 3.0f;
+    GLfloat edgeStripWidth = 0.25f;
     GLuint lastCubeID = 0;
+
     glm::vec3 cubeColor({0.541f, 0.011f, 0.011f}); //blood red
     glm::vec3 selectedCubeColor({0.003f, 0.266f, 0.129f}); //forest green
     glm::vec3 edgeStripColor({0.647f, 0.486f, 0.0f}); //darker gold
-    GLfloat edgeStripWidth = 0.25f;
 
+    GLboolean SHIFTIsDown;
     GLboolean keyStateWRepeat = false;
     GLboolean keyStateARepeat = false;
     GLboolean keyStateSRepeat = false;
@@ -53,7 +54,7 @@ int main()
         while (m_deltaTime >= 1.0)
         {
             glfwPollEvents();
-            update();
+            checkInput();
             m_deltaTime--;
         }
 
@@ -66,9 +67,46 @@ int main()
     return 0;
 }
 
-void update()
+void initializeContents()
 {
-    checkInput();
+    initializeOriginCube();
+
+    m_camera = new Camera();
+    m_mouse = new MouseInput();
+
+    m_identity = glm::mat4(1.0f);
+    m_translation = glm::translate(m_identity, glm::vec3(0.0f, 0.0f, -40.0f));
+    m_rotation = m_identity;
+    m_projection = glm::perspective(glm::radians(60.0f), m_windowWidth / m_windowHeight, 0.1f, 200.0f);
+
+    m_limitFPS = 1.0 / 60.0;
+    m_previousTime = glfwGetTime();
+    m_deltaTime = 0;
+
+    m_state = NONE;
+}
+
+void render()
+{
+    m_renderer.clear();
+
+    m_modelTransform = m_projection * m_camera->getWorldToViewMatrix() * m_translation * m_rotation;
+    m_shaders->setUniformMat4f("u_modelTransform", m_modelTransform);
+
+    for(Cube* cube : m_cubes)
+    {
+        if(m_state == SELECTING && cube->getID() == m_selectedCubeID)
+            cube->setEdgeStripColor(selectedCubeColor);
+        else
+            cube->setEdgeStripColor(edgeStripColor);
+
+        if(m_state == BUILDING && cube->getID() == m_selectedCubeID)
+            cube->setCubeColor(selectedCubeColor);
+        else
+            cube->setCubeColor(cubeColor);
+
+        m_renderer.draw(*(cube->getVertexArray()), *(cube->getIndexBuffer()), *m_shaders);
+    }
 }
 
 void checkInput()
@@ -86,6 +124,8 @@ void checkInput()
     if(m_mouse->getState() == RELEASED)
         m_camera->updateDirection(m_mouse->getPositionDelta());
 
+
+    //TODO move Key input handling into separate class
     int keyStateW = glfwGetKey(m_window, GLFW_KEY_W);
     int keyStateA = glfwGetKey(m_window, GLFW_KEY_A);
     int keyStateS = glfwGetKey(m_window, GLFW_KEY_S);
@@ -242,48 +282,6 @@ void checkInput()
     }
 }
 
-void render()
-{
-    m_renderer.clear();
-
-    m_modelTransform = m_projection * m_camera->getWorldToViewMatrix() * m_translation * m_rotation;
-    m_shaders->setUniformMat4f("u_modelTransform", m_modelTransform);
-
-    for(Cube* cube : m_cubes)
-    {
-        if(m_state == SELECTING && cube->getID() == m_selectedCubeID)
-            cube->setEdgeStripColor(selectedCubeColor);
-        else
-            cube->setEdgeStripColor(edgeStripColor);
-
-        if(m_state == BUILDING && cube->getID() == m_selectedCubeID)
-            cube->setCubeColor(selectedCubeColor);
-        else
-            cube->setCubeColor(cubeColor);
-
-        m_renderer.draw(*(cube->getVertexArray()), *(cube->getIndexBuffer()), *m_shaders);
-    }
-}
-
-void initializeContents()
-{
-    initializeOriginCube();
-
-    m_camera = new Camera();
-    m_mouse = new MouseInput();
-
-    m_identity = glm::mat4(1.0f);
-    m_translation = glm::translate(m_identity, glm::vec3(0.0f, 0.0f, -40.0f));
-    m_rotation = m_identity;
-    m_projection = glm::perspective(glm::radians(60.0f), m_windowWidth / m_windowHeight, 0.1f, 200.0f);
-
-    m_limitFPS = 1.0 / 60.0;
-    m_previousTime = glfwGetTime();
-    m_deltaTime = 0;
-
-    m_state = NONE;
-}
-
 void initializeOriginCube()
 {
     std::array<GLint, 6> neighbors{};
@@ -343,40 +341,50 @@ std::array<GLint, 6> calculateAndSetNeighbors(glm::vec3 cubeCenter)
     {
         currentCubeCenter = cube->getCenter();
         GLuint currentCubeID = cube->getID();
-        if((cubeCenter.x + halfSideCubeLength * 2) == currentCubeCenter.x && (cubeCenter.y == currentCubeCenter.y && cubeCenter.z == currentCubeCenter.z))
+
+        if(cubeCenter.y == currentCubeCenter.y && cubeCenter.z == currentCubeCenter.z)
         {
-            neighbors.at(3) = currentCubeID;
-            cube->addNeighbor(lastCubeID, LEFT);
+            if((cubeCenter.x + halfSideCubeLength * 2) == currentCubeCenter.x)
+            {
+                neighbors.at(3) = currentCubeID;
+                cube->addNeighbor(lastCubeID, LEFT);
+            }
+
+            if((cubeCenter.x - halfSideCubeLength * 2) == currentCubeCenter.x)
+            {
+                neighbors.at(2) = currentCubeID;
+                cube->addNeighbor(lastCubeID, RIGHT);
+            }
         }
 
-        if((cubeCenter.x - halfSideCubeLength * 2) == currentCubeCenter.x && (cubeCenter.y == currentCubeCenter.y && cubeCenter.z == currentCubeCenter.z))
+        if(cubeCenter.x == currentCubeCenter.x && cubeCenter.z == currentCubeCenter.z)
         {
-            neighbors.at(2) = currentCubeID;
-            cube->addNeighbor(lastCubeID, RIGHT);
+            if((cubeCenter.y + halfSideCubeLength * 2) == currentCubeCenter.y)
+            {
+                neighbors.at(0) = currentCubeID;
+                cube->addNeighbor(lastCubeID, DOWN);
+            }
+
+            if((cubeCenter.y - halfSideCubeLength * 2) == currentCubeCenter.y)
+            {
+                neighbors.at(1) = currentCubeID;
+                cube->addNeighbor(lastCubeID, UP);
+            }
         }
 
-        if((cubeCenter.y + halfSideCubeLength * 2) == currentCubeCenter.y && (cubeCenter.x == currentCubeCenter.x && cubeCenter.z == currentCubeCenter.z))
+        if(cubeCenter.x == currentCubeCenter.x && cubeCenter.y == currentCubeCenter.y)
         {
-            neighbors.at(0) = currentCubeID;
-            cube->addNeighbor(lastCubeID, DOWN);
-        }
+            if((cubeCenter.z + halfSideCubeLength * 2) == currentCubeCenter.z)
+            {
+                neighbors.at(4) = currentCubeID;
+                cube->addNeighbor(lastCubeID, BACK);
+            }
 
-        if((cubeCenter.y - halfSideCubeLength * 2) == currentCubeCenter.y && (cubeCenter.x == currentCubeCenter.x && cubeCenter.z == currentCubeCenter.z))
-        {
-            neighbors.at(1) = currentCubeID;
-            cube->addNeighbor(lastCubeID, UP);
-        }
-
-        if((cubeCenter.z + halfSideCubeLength * 2) == currentCubeCenter.z && (cubeCenter.x == currentCubeCenter.x && cubeCenter.y == currentCubeCenter.y))
-        {
-            neighbors.at(4) = currentCubeID;
-            cube->addNeighbor(lastCubeID, BACK);
-        }
-
-        if((cubeCenter.z - halfSideCubeLength * 2) == currentCubeCenter.z && (cubeCenter.x == currentCubeCenter.x && cubeCenter.y == currentCubeCenter.y))
-        {
-            neighbors.at(5) = currentCubeID;
-            cube->addNeighbor(lastCubeID, FRONT);
+            if((cubeCenter.z - halfSideCubeLength * 2) == currentCubeCenter.z)
+            {
+                neighbors.at(5) = currentCubeID;
+                cube->addNeighbor(lastCubeID, FRONT);
+            }
         }
     }
 
@@ -397,8 +405,8 @@ GLboolean initializeWindow()
     if (!glfwInit())
     {
         std::cout <<
-                  "GLFW Error: Library could not be initialized!" <<
-                  std::endl;
+        "GLFW Error: Library could not be initialized!" <<
+        std::endl;
 
         return GL_FALSE;
     }
@@ -416,8 +424,8 @@ GLboolean initializeWindow()
     if (!m_window)
     {
         std::cout <<
-                  "GLFW Error: Window context could not be initialized!" <<
-                  std::endl;
+        "GLFW Error: Window context could not be initialized!" <<
+        std::endl;
 
         return GL_FALSE;
     }
@@ -429,8 +437,8 @@ GLboolean initializeWindow()
     if (glewInit() != GLEW_OK)
     {
         std::cout <<
-                  "GLEW Error: Could not be initialized!" <<
-                  std::endl;
+        "GLEW Error: Could not be initialized!" <<
+        std::endl;
         return GL_FALSE;
     }
 

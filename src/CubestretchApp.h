@@ -45,7 +45,6 @@ GLuint m_selectedCubeID;
 GLboolean initializeWindow();
 void initializeContents();
 void initializeOriginCube();
-void update();
 void checkInput();
 void render();
 GLuint createCube(const Cube* sourceCube, Direction direction);

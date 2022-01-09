@@ -65,23 +65,32 @@ private:
         20,40,42,42,23,20,
         41,30,35,35,43,41
     };
+
     glm::vec3 m_center;
     std::vector<GLfloat> m_vertices;
+    std::array<GLint, 6> m_neighbors; //up,down,left,right,front,back
+
+    GLuint m_id;
+
     VertexArray* m_vertexArray;
     VertexBuffer* m_vertexBuffer;
     IndexBuffer* m_indexBuffer;
-    //std::array<CubeFace*, 6> m_cubeFaces; //up,down,left,right,front,back
-    std::array<GLint, 6> m_neighbors; //up,down,left,right,front,back
+
     glm::vec3 m_cubeColor;
     glm::vec3 m_edgeStripColor;
-    GLuint m_id;
+
     GLfloat m_halfSideLength;
     GLfloat m_edgeStripWidth;
+
     void updateVertices();
     void resetBuffer();
+
 public:
     Cube(glm::vec3 center, GLfloat halfSideLength, std::array<GLint, 6> &neighbors, glm::vec3 cubeColor, GLuint id, GLfloat edgeStripWidth, glm::vec3 edgeStripColor);
+
     glm::vec3 getCenter() const;
+    GLuint getID() const;
+
     void addNeighbor(GLuint neighborID, Direction direction);
     std::array<GLint, 6> getNeighbors() const;
     GLint getUpNeighbor() const;
@@ -90,10 +99,11 @@ public:
     GLint getRightNeighbor() const;
     GLint getFrontNeighbor() const;
     GLint getBackNeighbor() const;
+
     VertexArray* getVertexArray() const;
     IndexBuffer* getIndexBuffer() const;
+
     glm::vec3 getCubeColor() const;
-    GLuint getID() const;
     void setCubeColor(glm::vec3 color);
     glm::vec3 getEdgeStripColor() const;
     void setEdgeStripColor(glm::vec3 color);

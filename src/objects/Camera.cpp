@@ -15,8 +15,6 @@ glm::mat4 Camera::getWorldToViewMatrix() const
 
 void Camera::updateDirection(const glm::vec2 &mousePositionDelta)
 {
-    //glm::vec2 positionDelta = updatedMousePosition - m_previousMousePosition;
-    //m_previousMousePosition = updatedMousePosition;
     //TODO: fix magix numbers
     if(glm::length(mousePositionDelta) > 100.0f)
         return;
@@ -59,9 +57,4 @@ void Camera::moveUp()
 void Camera::moveDown()
 {
     m_position += -MOVEMENT_SPEED * m_UP;
-}
-
-glm::vec3 Camera::getDirection() const
-{
-    return m_crossedViewDirection;
 }
